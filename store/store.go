@@ -89,7 +89,8 @@ func (s *store) Init(a *app.App) (err error) {
 	// If creds are provided in the configuration, they are directly forwarded to the client as static credentials.
 	s.bucket = aws.String(conf.Bucket)
 	s.client = s3.NewFromConfig(awsConf, func(o *s3.Options) {
-		o.DisablePayloadSigning = true
+		// o.DisablePayloadSigning = true
+		o.APIOptions = append(o.APIOptions, v4.SwapComputePayloadSHA256ForUnsignedPayloadMiddleware)
 		// Google Cloud Storage alters the Accept-Encoding header, which breaks the v2 request signature
 		// (https://github.com/aws/aws-sdk-go-v2/issues/1816)
 		if strings.Contains(conf.Endpoint, "storage.googleapis.com") {
